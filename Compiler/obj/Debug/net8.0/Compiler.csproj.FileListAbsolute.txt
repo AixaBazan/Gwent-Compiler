@@ -1,0 +1,14 @@
+D:\Aixa Study\2do Proyecto\Compiler\bin\Debug\net8.0\Compiler.exe
+D:\Aixa Study\2do Proyecto\Compiler\bin\Debug\net8.0\Compiler.deps.json
+D:\Aixa Study\2do Proyecto\Compiler\bin\Debug\net8.0\Compiler.runtimeconfig.json
+D:\Aixa Study\2do Proyecto\Compiler\bin\Debug\net8.0\Compiler.dll
+D:\Aixa Study\2do Proyecto\Compiler\bin\Debug\net8.0\Compiler.pdb
+D:\Aixa Study\2do Proyecto\Compiler\obj\Debug\net8.0\Compiler.GeneratedMSBuildEditorConfig.editorconfig
+D:\Aixa Study\2do Proyecto\Compiler\obj\Debug\net8.0\Compiler.AssemblyInfoInputs.cache
+D:\Aixa Study\2do Proyecto\Compiler\obj\Debug\net8.0\Compiler.AssemblyInfo.cs
+D:\Aixa Study\2do Proyecto\Compiler\obj\Debug\net8.0\Compiler.csproj.CoreCompileInputs.cache
+D:\Aixa Study\2do Proyecto\Compiler\obj\Debug\net8.0\Compiler.dll
+D:\Aixa Study\2do Proyecto\Compiler\obj\Debug\net8.0\refint\Compiler.dll
+D:\Aixa Study\2do Proyecto\Compiler\obj\Debug\net8.0\Compiler.pdb
+D:\Aixa Study\2do Proyecto\Compiler\obj\Debug\net8.0\Compiler.genruntimeconfig.cache
+D:\Aixa Study\2do Proyecto\Compiler\obj\Debug\net8.0\ref\Compiler.dll
