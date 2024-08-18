@@ -2,7 +2,11 @@ class Or : BinaryExpression
 {
     public override ExpressionType Type{get;set;}
     public override object? Value{get;set;}
-    public Or(CodeLocation location) : base(location){}
+    public Or(CodeLocation location, Expression left, Expression right) : base(location)
+    {
+        this.Right = right;
+        this.Left = left;
+    }
     public override void Evaluate()
     {
         Right.Evaluate();

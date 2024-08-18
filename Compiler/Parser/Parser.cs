@@ -1,62 +1,63 @@
 using System.Text.RegularExpressions;
-
 class Parser
 {
     private TokenStream Stream;
-    public Scope environment;
-    public bool HadParseError {get; private set;}
+    public List<CompilingError> errors {get; private set;}
     public Parser(TokenStream stream) 
     {
         this.Stream = stream;
-        this.environment = new Scope();
-        this.HadParseError = false;
+        this.errors = new List<CompilingError>();
     }
-    //Parse
-    public Card PARSE()
+    bool PanicMode(CompilingError error, string breaker = TokenValue.ClosedCurlyBracket)
     {
-        //Interpreter program = new Interpreter(new CodeLocation());
-        Card card = null;
-        while(!Stream.End)
+        errors.Add(error);
+        while (!Stream.Match(breaker))
         {
-            CodeLocation loc = Stream.Peek().Location;
-            if(Stream.Match(TokenValue.Card))
-            {
-                if(Stream.Match(TokenValue.OpenCurlyBracket))
-                {
-                    card = ParseCard(Stream.LookAhead(-2).Location);
-                    //program.Cards.Add(card);
-                }
-                else
-                {
-                    throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se esperaba {");
-                }
-            }
-            else throw new CompilingError(loc, ErrorCode.Invalid, "Intento de declaracion invalida, se espera card o effect");
+            if (Stream.Peek().Type == TokenType.End || Stream.Peek().Value == TokenValue.ClosedBracket) return true;
+            else Stream.MoveNext(1);
         }
-        return card;
+
+        return false;
     }
-    public Effect PARSEffect()
+    //Parse GwentProgram
+    public GwentProgram ParseProgram(List<CompilingError> errors)
     {
-        //Interpreter program = new Interpreter(new CodeLocation());
-        Effect effect = null;
-        while(!Stream.End)
+        GwentProgram program = new GwentProgram(new CodeLocation());
+
+        while (!Stream.Match(TokenType.End))
         {
-            CodeLocation loc = Stream.Peek().Location;
-            if(Stream.Match(TokenValue.declareEffect))
+            try
             {
-                if(Stream.Match(TokenValue.OpenCurlyBracket))
+                if (Stream.Match(TokenValue.declareEffect)) 
                 {
-                    effect = ParseEffect(Stream.LookAhead(-2).Location);
-                    //program.Cards.Add(card);
-                }
-                else
-                {
-                    throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se esperaba {");
-                }
+                    if(Stream.Match(TokenValue.OpenCurlyBracket))
+                    {
+                        program.Effects.Add(ParseEffect(Stream.LookAhead(-2).Location));
+                    }
+                    else
+                    {
+                        throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se esperaba {");
+                    }
+                }   
+                else if (Stream.Match(TokenValue.Card))
+                { 
+                    if(Stream.Match(TokenValue.OpenCurlyBracket))
+                    {
+                        program.Cards.Add(ParseCard(Stream.LookAhead(-2).Location));
+                    }
+                    else
+                    {
+                        throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se esperaba {");
+                    }
+                }    
+                else throw new CompilingError(Stream.Peek().Location, ErrorCode.Invalid, "Declaracion invalida, se esperaba effect o card");
             }
-            else throw new CompilingError(loc, ErrorCode.Invalid, "Intento de declaracion invalida, se espera card o effect");
+            catch(CompilingError error)
+            {
+                if (PanicMode(error)) break;
+            }
         }
-        return effect;
+        return program;
     }
     //Parseando la carta
     public Card ParseCard(CodeLocation location)
@@ -83,6 +84,7 @@ class Parser
         if(Faction is null) throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "No se declaro la faccion de la carta");
         if(Power is null) throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "No se declaro el poder de la carta");
         if(Range is null) throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "No se declaro el range de la carta");
+
         return new Card(Name, Type, Faction, Power, Range, location);
     }
     private List<Expression> AssignRange(bool IsNotDefinided)
@@ -119,7 +121,7 @@ class Parser
     {
         if(!IsNotDefinided)
         {
-            throw new CompilingError(Stream.Peek().Location, ErrorCode.None, "Ya se definio la propiedad " + name +" de la carta");
+            throw new CompilingError(Stream.Peek().Location, ErrorCode.None, "Ya se definio la propiedad " + name);
         }
         Expression exp;
         if(Stream.Match(TokenValue.colon))
@@ -140,9 +142,10 @@ class Parser
         Token targets = null;
         Token context = null;
         Stmt body = null;
-
         do
         {
+            try
+            {
             if(Stream.Peek().Type == TokenType.End) throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Declaracion no terminada, se esperaba }");
             else if(Stream.Match(TokenValue.name)) Name = AssignProperty(Name is null, "Name");
             else if(Stream.Match(TokenValue.action))
@@ -163,19 +166,29 @@ class Parser
                 else throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se esperaba un identificador");
                 Stream.Consume(TokenValue.ClosedBracket, "Se esperaba )");
                 Stream.Consume(TokenValue.lambda, "Se esperaba =>");
-                if(Stream.Match(TokenValue.OpenCurlyBracket)) body = ActionBody();
+                if(Stream.Match(TokenValue.OpenCurlyBracket)) 
+                {
+                    body = ActionBody();
+                }
                 else body = SingleStmt();
+
+                if(body is null) throw new CompilingError(Stream.Previous().Location, ErrorCode.Invalid, "Declaracion invalida del Action del efecto");
+
                 if(!Stream.Comma())
-            {
-                throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se esperaba , ");
-            }
+                {
+                    throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se esperaba , ");
+                }
             }
             else 
             {
-                throw new CompilingError(Stream.Peek().Location, ErrorCode.Invalid, "Declaracion de propiedad de efecto invalida");
+                throw new CompilingError(Stream.Peek().Location, ErrorCode.Invalid, "Declaracion de propiedad de efecto invalida, se esperaba Name, Params o Action");
             }
+            }catch(CompilingError error)
+            {
+                if (PanicMode(error, TokenValue.comma)) break;
+            }
+        } while(!Stream.Match(TokenValue.ClosedCurlyBracket));
 
-        }while(!Stream.Match(TokenValue.ClosedCurlyBracket));
         if (Name is null) throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "No se declaro el nombre del efecto");
         if (body is null) throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "No se declaro el Action del efecto");
 
@@ -197,32 +210,37 @@ class Parser
             }
             catch (CompilingError error)
             {
-                System.Console.WriteLine(error);
-                this.HadParseError = true;
+                if (PanicMode(error, TokenValue.semicolon)) break;
             }
         } while (!Stream.Match(TokenValue.ClosedCurlyBracket));
-        Stream.Match(TokenValue.semicolon); //no se pq
+
         return new Block(statements, Stream.Peek().Location);
     }
     private Stmt For()
     {
         CodeLocation loc = Stream.Previous().Location;
-        Token token = null;
+        string id = null;
         if(Stream.Match(TokenType.Identifier))
         {
-            token = Stream.Previous();
+            id = Stream.Previous().Value;
         }
         else throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se espera un identificador despues de for");
         Stream.Consume(TokenValue.In, "Se esperaba la palabra reservada in");
-        Expression collection = expression();
+        string collection = null;
+        if(Stream.Match(TokenType.Identifier))
+        {
+            collection = Stream.Previous().Value;
+        }
+        else throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se espera un identificador despues de in");
         Stmt body = null;
-        if(Stream.Match(TokenValue.OpenBracket))
+        if(Stream.Match(TokenValue.OpenCurlyBracket))
         {
             body = ActionBody();
+            Stream.Consume(TokenValue.semicolon, "Se espera ; desp de una expresion o un cuerpo de expresiones");
         }
         else body = SingleStmt();
-
-        return new For(token, collection, body, loc);
+        
+        return new For(id, collection, body, loc);
     }
     private Stmt While()
     {
@@ -234,6 +252,7 @@ class Parser
         if(Stream.Match(TokenValue.OpenCurlyBracket))
         {
             body = ActionBody();
+            Stream.Consume(TokenValue.semicolon, "Se espera ; desp de una expresion o un cuerpo de expresiones");
         }
         else body = SingleStmt();
         return new While(condition, body, loc);
@@ -244,57 +263,62 @@ class Parser
         Stmt stmt = null;
         if (Stream.Match(TokenValue.Print))
         {
-            try
-            {
-                stmt = new Print(expression(), Stream.Previous().Location);
-            }
-            catch(CompilingError error) 
-            {
-                Console.WriteLine(error);
-            }
+            stmt = new Print(expression(), Stream.Previous().Location);
         }
         else if (Stream.Match(TokenType.Identifier))
         {
-            if(Stream.Match(TokenValue.Assign))
+            if(Stream.Match(TokenValue.Assign, TokenValue.Increase, TokenValue.Decrease))
             {
                 stmt = VarDeclaration();
             }
             else 
             {
-                HadParseError = true; 
-                throw new CompilingError(Stream.Peek().Location, ErrorCode.Invalid, "Expression invalida despues del identificador " + Stream.Previous().Value);
+                Stream.MoveNext(-1);
+                stmt = new ExpressionStmt(expression(), Stream.Previous().Location);
             }
         }
-        ///else throw new CompilingError(Stream.Peek().Location, ErrorCode.Invalid, "Statement vacio");
+        else throw new CompilingError(Stream.Peek().Location, ErrorCode.Invalid, "Statement vacio o expresion invalida");
         if (!Stream.Match(TokenValue.semicolon))
         {
             throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Declaracion incompleta, se esperaba ;");
         }
         return stmt;
     }
+    
     //revisar ;
     public Stmt VarDeclaration() 
     {
         string Id = Stream.LookAhead(-2).Value;
         CodeLocation loc = Stream.LookAhead(-2).Location;
+        Token op = Stream.Previous();
         Expression initializer = expression();
-        return new Var(Id ,initializer, loc);
+        return new Var(Id ,initializer,op, loc);
     }
     //Parseando expresiones
-    public Expression parse() 
-    {
-        try 
-        {
-            return expression();
-        } catch (CompilingError e) 
-        {
-            Console.WriteLine(e);
-            return null;
-        }
-    }
+    #region Expressions
     private Expression expression()
     {
-        return Equality();
+        return Or();
+    }
+    private Expression Or()
+    {
+        Expression expr = And();
+        while (Stream.Match(TokenValue.or)) 
+        {
+        Expression right = And();
+        expr = new Or(Stream.Peek().Location, expr, right);
+        }
+        return expr;
+    }
+    private Expression And()
+    {
+        Expression expr = Equality();
+        while (Stream.Match(TokenValue.and)) 
+        {
+        Expression right = Equality();
+        expr = new And(Stream.Peek().Location, expr, right);
+        }
+        return expr;
     }
     private Expression Equality()
     {
@@ -361,11 +385,11 @@ class Parser
     }
     private Expression Factor() 
     {
-        Expression expr = Unary();
+        Expression expr = Power();
         while (!Stream.End && Stream.Match(TokenValue.Mul, TokenValue.Div)) 
         {
             Token operatorToken = Stream.Previous();
-            Expression right = Unary();
+            Expression right = Power();
             if(operatorToken.Value == TokenValue.Mul)
                 {
                     expr = new Mult(Stream.Previous().Location, expr, right);
@@ -374,6 +398,16 @@ class Parser
                 {
                     expr = new Div(Stream.Previous().Location, expr, right);
                 }
+        }
+        return expr;
+    }
+    private Expression Power() 
+    {
+        Expression expr = Unary();
+        while (!Stream.End && Stream.Match(TokenValue.pow)) 
+        {
+            Expression right = Unary();
+            expr = new Pow(Stream.Previous().Location, expr, right);
         }
         return expr;
     }
@@ -400,54 +434,118 @@ class Parser
             Stream.Consume(TokenValue.ClosedBracket, "Se esperaba ')' después de la expresión.");
             return new Grouping(expr, Stream.Previous().Location);
         }
+        // Chequeo un identificador 
         if (Stream.Match(TokenType.Identifier)) 
         {
+            //Expression exp;
             Token variable = Stream.Previous();
+            CodeLocation VarLoc = Stream.Previous().Location;
             Expression exp = new Variable(variable.Value, Stream.Previous().Location);
-            while (Stream.Match(TokenValue.dot)) //chequear si se va a llamar a una propiedad o a una funcion
-            {
-                Token caller = null;
-                if(Stream.Match(TokenType.KeyWord)) caller = Stream.Previous();
-                else throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se esperaba una propiedad o metodo");
-                if (Stream.Match(TokenValue.OpenBracket))
-                {
-                    if (!Stream.Match(TokenValue.ClosedBracket))
-                    {
-                        string param = null;
-                        if(Stream.Match(TokenType.Identifier))
-                        {
-                            param = Stream.Previous().Value;
-                        }
-                        else
-                        {
-                            throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se esperaba el parametro del metodo");
-                        }
-                        Stream.Consume(TokenValue.ClosedBracket, "Se esperaba )");
-                        exp = new MethodWithParams(exp, caller.Value, param, Stream.Previous().Location); //chequear loc
-                    }
-                    else exp = new Method(exp, caller.Value, Stream.Previous().Location); //chequear loc
-                }
-                //else expr = new Property(caller, expr);
-                else exp = new Property(exp, caller.Value, Stream.Previous().Location); //Chequear loc
-            }
+            // Procesar indexados, propiedades y métodos
+            exp = ProcessMemberAccess(exp, VarLoc);
+            
             return exp;
         }
         if (Stream.Match(TokenType.Number)) 
-        {
-            // Asegúrate de que el valor sea una cadena de número válida
-            string numberStr = Stream.Previous().Value;
-            if (double.TryParse(numberStr, out double number))
-            {
-                return new Number(number, Stream.Previous().Location);
-            }
-            else
-            {
-                throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Formato de número inválido.");
-            }
-        }
+            return new Number(double.Parse(Stream.Previous().Value), Stream.Previous().Location);
+        
         if (Stream.Match(TokenType.Text)) 
             return new Text(Stream.Previous().Value, Stream.Previous().Location);
         
         throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "Se esperaba una expresion");
     }
+
+
+    private Expression ProcessMemberAccess(Expression exp, CodeLocation varLoc)
+    {
+        while (true)
+        {
+            if (Stream.Match(TokenValue.OpenSquareBracket))
+            {
+                if (Stream.Match(TokenType.Number))
+                {
+                    exp = new Indexer(exp, double.Parse(Stream.Previous().Value), varLoc);
+                }
+                else
+                {
+                    throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se esperaba un número como índice");
+                }
+                Stream.Consume(TokenValue.ClosedSquareBracket, "Se esperaba ]");
+            }
+            else if (Stream.Match(TokenValue.dot))
+            {
+                Token caller = null;
+                if (Stream.Match(TokenType.KeyWord))
+                {
+                    caller = Stream.Previous();
+                }
+                else
+                {
+                    throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se esperaba una propiedad o método");
+                }
+
+                if (Stream.Match(TokenValue.OpenBracket))
+                {
+                    if (!Stream.Match(TokenValue.ClosedBracket))
+                    {
+                        Expression param = expression(); // Llama a la función de expresión para obtener parámetros
+                        Stream.Consume(TokenValue.ClosedBracket, "Se esperaba )");
+                        exp = new MethodWithParams(exp, caller.Value, param, varLoc);
+                    }
+                    else
+                    {
+                        exp = new Method(exp, caller.Value, varLoc);
+                    }
+                }
+                else
+                {
+                    exp = new Property(exp, caller.Value, varLoc);
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+        return exp; // Retorna la expresión construida
+    }
+    // private Expression ProcessIndexer(Expression exp, CodeLocation varLoc)
+    // {
+    //     if (Stream.Match(TokenValue.OpenSquareBracket))
+    //     {
+    //         if (Stream.Match(TokenType.Number))
+    //         {
+    //             exp = new Indexer(exp, double.Parse(Stream.Previous().Value), varLoc);
+    //         }
+    //         else
+    //         {
+    //             throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se esperaba un número como índice");
+    //         }
+    //         Stream.Consume(TokenValue.ClosedSquareBracket, "Se esperaba ]");
+    //     }
+    //     return exp;
+    // }
+
+    // private Expression ProcessMemberAccess(Expression exp, CodeLocation varLoc)
+    // {
+    //     while (Stream.Match(TokenValue.dot))
+    //     {
+    //         Token caller = null;
+    //         if(Stream.Match(TokenType.KeyWord)) caller = Stream.Previous();
+    //         else throw new CompilingError(Stream.Previous().Location, ErrorCode.Expected, "Se esperaba una propiedad o metodo");
+    //         if (Stream.Match(TokenValue.OpenBracket))
+    //         {
+    //             if (!Stream.Match(TokenValue.ClosedBracket))
+    //             {
+    //                 Expression param = expression();
+    //                 Stream.Consume(TokenValue.ClosedBracket, "Se esperaba )");
+    //                 exp = new MethodWithParams(exp, caller.Value, param, varLoc); 
+    //             }
+    //             else exp = new Method(exp, caller.Value, varLoc); 
+    //         }
+    //         else exp = new Property(exp, caller.Value, varLoc); 
+    //     }
+    //     return exp;
+    // }
+    #endregion
 }

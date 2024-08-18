@@ -20,7 +20,6 @@ public class Add : BinaryExpression
         bool left = Left.CheckSemantic(context, scope, errors);
         if (Right.Type != ExpressionType.Number || Left.Type != ExpressionType.Number)
         {
-            //Poner en ingles
             errors.Add(new CompilingError(Location, ErrorCode.Invalid, "No se pueden sumar dos tipos que no sean numericos"));
             Type = ExpressionType.ErrorType;
             return false;

@@ -2,7 +2,6 @@
 {
     public static void Main(string[] args)
     {
-        
         // Ruta del archivo de texto
         string filePath = @"D:\Aixa Study\2do Proyecto\a.txt";
         // Leer el contenido del archivo y asignarlo a una variable string
@@ -16,23 +15,23 @@
             Console.WriteLine(error);
         }
         System.Console.WriteLine();
-        // foreach(Token token in tokens)
-        // {
-        //     System.Console.WriteLine(token);
-        // }
+        foreach(Token token in tokens)
+        {
+            System.Console.WriteLine(token);
+        }
 
 
         System.Console.WriteLine("Se supone que aqui se parsea");
         TokenStream read = new TokenStream(tokens);
         Parser parser = new Parser(read);
-
-        Effect result = parser.PARSEffect();
+        List<CompilingError> Error = new List<CompilingError>();
+        GwentProgram result = parser.ParseProgram(Error);
         if (result == null)
         {
             Console.WriteLine("No se pudo parsear la expresión.");
             return;
         }
-        if(!parser.HadParseError)
+        if(parser.errors.Count == 0)
         {
         System.Console.WriteLine("Resultado del parseo:");
         System.Console.WriteLine(result);
@@ -64,6 +63,10 @@
         }
         else
         {
+            foreach(var item in parser.errors)
+            {
+                System.Console.WriteLine(item);
+            }
             System.Console.WriteLine("Hubo errores en el parse, no se pudo continuar la evaluacion");
         }
     }   

@@ -35,7 +35,7 @@ class Method : UnaryExpression
     }
     public override void Evaluate()
     {
-       this.Value = "Es una carta o una lista";
+       this.Value = Type;
     }
     public override string ToString()
     {

@@ -5,7 +5,6 @@ public class TokenStream : IEnumerable<Token>
     private List<Token> tokens;
     private int position;
     public int Position { get { return position; } }
-
     public TokenStream(IEnumerable<Token> tokens)
     {
         this.tokens = new List<Token>(tokens);
@@ -58,7 +57,7 @@ public class TokenStream : IEnumerable<Token>
     {
         return tokens[position - 1];
     }
-    public bool End => position >= tokens.Count - 1;
+    public bool End => Peek().Type == TokenType.End;
     public Token Consume(string value, string message) 
     {
         if (Check(value)) return Advance();

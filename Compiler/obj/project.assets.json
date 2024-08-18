@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Aixa Study\\2do Proyecto\\Compiler\\Compiler.csproj",
+      "projectUniqueName": "D:\\Aixa Study\\2do Proyecto\\Gwent-Compiler\\Compiler\\Compiler.csproj",
       "projectName": "Compiler",
-      "projectPath": "D:\\Aixa Study\\2do Proyecto\\Compiler\\Compiler.csproj",
+      "projectPath": "D:\\Aixa Study\\2do Proyecto\\Gwent-Compiler\\Compiler\\Compiler.csproj",
       "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
-      "outputPath": "D:\\Aixa Study\\2do Proyecto\\Compiler\\obj\\",
+      "outputPath": "D:\\Aixa Study\\2do Proyecto\\Gwent-Compiler\\Compiler\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config"

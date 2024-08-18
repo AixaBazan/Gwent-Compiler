@@ -1,6 +1,14 @@
 //La clase context contiene las propiedades a la q se puede acceder cada tipo
 public class Context
 {
+    public List<string> effects;
+    public List<string> cards;
+
+    public Context()
+    {
+        effects = new List<string>();
+        cards = new List<string>();
+    }
     public Dictionary<string, ExpressionType> contextProperties = new Dictionary<string, ExpressionType>
     {
         {"Hand" , ExpressionType.List}, {"Field", ExpressionType.List}, {"Graveyard", ExpressionType.List},
@@ -26,13 +34,28 @@ public class Context
         {"Pop", ExpressionType.Card}, //tambien quita la carta de la lista
         {"Shuffle", ExpressionType.Function}
     };
-    
-    // public List<string> effects;
-    // public List<string> cards;
-
-    // public Context()
-    // {
-    //     effects = new List<string>();
-    //     cards = new List<string>();
-    // }
+    enum ValidCardType
+    {
+        Oro,
+        Plata,
+        Clima,
+        Aumento,
+        Lider
+    }
+    enum ValidRange
+    {
+        Melee,
+        Siege,
+        Ranged
+    }
+    enum ValidSource //fuente de donde se sacan las cartas
+    {
+        hand,
+        otherHand,
+        deck,
+        otherDeck,
+        field, 
+        otherField,
+        parent //solo permitida en el postAction
+    }
 }

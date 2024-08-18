@@ -1,9 +1,13 @@
 
-class POW : BinaryExpression
+class Pow : BinaryExpression
 {
     public override object? Value{get;set;}
     public override ExpressionType Type { get; set; }
-    public POW(CodeLocation location): base(location){}
+    public Pow(CodeLocation location, Expression left, Expression right) : base(location)
+    {
+        this.Right = right;
+        this.Left = left;
+    }
     public override void Evaluate()
     {
         Right.Evaluate();

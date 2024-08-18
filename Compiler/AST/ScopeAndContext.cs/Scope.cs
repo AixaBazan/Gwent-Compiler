@@ -83,14 +83,14 @@ public class Scope //Para variables
         {
             types[name] = type;
         }
-        // else if(Parent != null)
-        // {
-        //     if(AssignType(name, type))
-        //     {
-        //         return;
-        //     }
-        //     else values.Add(name, type);
-        // }
+        else if(Parent != null)
+        {
+            if(AssignType(name, type))
+            {
+                return;
+            }
+            else types.Add(name, type);
+        }
         else types.Add(name,type);
     }
     private bool AssignType(string name, ExpressionType type)

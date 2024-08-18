@@ -1,4 +1,4 @@
-class Effect : AST
+public class Effect : AST
 {
     public Expression Name {get;private set;}
     //public Dictionary<Token, Token> Params {get;private set;}
@@ -43,6 +43,19 @@ class Effect : AST
     {
         Body.Interprete();
     }
+    // public bool CollectEffects(Context context, Scope scope, List<CompilingError> errors)
+    // {
+    //     if (context.effects.Contains(Name.Value))
+    //     {
+    //         errors.Add(new CompilingError(Location, ErrorCode.Invalid, "Ya se ha definifo un efecto con ese nombre"));
+    //         return false;
+    //     }
+    //     else
+    //     {
+    //         context.effects.Add((string)Name.Value);
+    //     }
+    //     return true;
+    // }
     public override string ToString()
     {
         // Obtener el nombre del efecto

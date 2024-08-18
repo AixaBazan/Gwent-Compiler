@@ -43,6 +43,8 @@ public class TokenValue
     public const string pow = "Pow"; // ^
     //Assignment Operators
     public const string Assign = "Assign"; // =
+    public const string Increase = "Increase"; // +=
+    public const string Decrease = "Decrease"; // -=
     //OtherOperators
     public const string comma = "ValueSeparator"; // ,
     public const string semicolon = "StatementSeparator"; // ;
@@ -99,14 +101,14 @@ public class TokenValue
     //Context Properties
     public const string hand = "Hand";
     public const string field = "Field";
-    public const string graveyard = "GraveYard";
+    public const string graveyard = "Graveyard";
     public const string deck = "Deck";
     public const string board = "Board";
     public const string triggerPlayer = "TriggerPlayer";
     //Context Methods
     public const string handOfPlayer = "HandOfPlayer";
     public const string fieldOfPlayer = "FieldOfPlayer";
-    public const string graveyardOfPlayer = "GraveYardOfPlayer";
+    public const string graveyardOfPlayer = "GraveyardOfPlayer";
     public const string deckOfPlayer = "DeckOfPlayer";
     //List Methods
     public const string find = "Find";
@@ -155,6 +157,8 @@ class Compiling
                 LexicalProcess.RegisterOperator(":", TokenValue.colon);
                 LexicalProcess.RegisterOperator(".", TokenValue.dot);
                 LexicalProcess.RegisterOperator("=>", TokenValue.lambda);
+                LexicalProcess.RegisterOperator("+=", TokenValue.Increase);
+                LexicalProcess.RegisterOperator("-=", TokenValue.Decrease);
 
                 //Text
                 LexicalProcess.RegisterText("\"", "\"");
@@ -196,6 +200,11 @@ class Compiling
                 LexicalProcess.RegisterKeyword("Remove", TokenValue.remove);
                 LexicalProcess.RegisterKeyword("Pop", TokenValue.pop);
                 LexicalProcess.RegisterKeyword("Shuffle", TokenValue.shuffle);
+
+                LexicalProcess.RegisterKeyword("HandOfPlayer", TokenValue.handOfPlayer);
+                LexicalProcess.RegisterKeyword("FieldOfPlayer", TokenValue.fieldOfPlayer);
+                LexicalProcess.RegisterKeyword("DeckOfPlayer", TokenValue.deckOfPlayer);
+                LexicalProcess.RegisterKeyword("GraveyardOfPlayer", TokenValue.graveyardOfPlayer);
             }
          return LexicalProcess;
         }
