@@ -49,7 +49,7 @@ public class Property : UnaryExpression
     }
     public override void Evaluate()
     {
-       this.Value = Type;
+       this.Value = Type.ToString();
     }
     public override string ToString()
     {

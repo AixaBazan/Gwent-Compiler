@@ -20,14 +20,14 @@ public class GwentProgram : Stmt
         foreach (Effect effect in Effects)
         {
             //cada efecto tiene su propio scope
-            checkEffects = checkEffects && effect.CheckSemantic(context, AssociatedScope.CreateChild(), errors);
+            checkEffects = checkEffects && effect.CheckSemantic(context, AssociatedScope, errors);
         }
 
         bool checkCards = true;
         foreach (Card card in Cards)
         {
             //cada carta tiene su propio scope
-            checkCards = checkCards && card.CheckSemantic(context, AssociatedScope.CreateChild(), errors);
+            checkCards = checkCards && card.CheckSemantic(context, AssociatedScope, errors);
         }
 
         return checkCards && checkEffects;

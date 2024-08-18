@@ -41,6 +41,7 @@
         
             Context context = new Context();
             Scope scope = new Scope();
+            
 
             result.CheckSemantic(context, scope, errors);
 

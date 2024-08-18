@@ -34,7 +34,12 @@ public class Context
         {"Pop", ExpressionType.Card}, //tambien quita la carta de la lista
         {"Shuffle", ExpressionType.Function}
     };
-    enum ValidCardType
+    public Dictionary<string, ExpressionType> ValidEffectParams  = new Dictionary<string, ExpressionType>
+    {
+        {"Number", ExpressionType.Number}, //tambien quita la carta de la lista
+        {"String", ExpressionType.Text}, {"Bool", ExpressionType.Boolean}
+    };
+    public enum ValidCardType
     {
         Oro,
         Plata,
@@ -42,20 +47,6 @@ public class Context
         Aumento,
         Lider
     }
-    enum ValidRange
-    {
-        Melee,
-        Siege,
-        Ranged
-    }
-    enum ValidSource //fuente de donde se sacan las cartas
-    {
-        hand,
-        otherHand,
-        deck,
-        otherDeck,
-        field, 
-        otherField,
-        parent //solo permitida en el postAction
-    }
+    public string[] ValidRange = new string[]{"Melee", "Siege", "Ranged"};
+    public string[] ValidSource = new string[]{"hand", "otherHand", "deck", "otherDeck", "field", "otherField", "parent"};
 }

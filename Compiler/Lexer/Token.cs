@@ -40,6 +40,7 @@ public class TokenValue
     public const string Mul = "Multiplication"; // *
     public const string Div = "Division"; // /
     public const string addOne = "AddOne"; // ++
+    public const string substractOne = "SubstractOne";
     public const string pow = "Pow"; // ^
     //Assignment Operators
     public const string Assign = "Assign"; // =
@@ -80,15 +81,14 @@ public class TokenValue
     public const string power = "Power"; //Power
     public const string range = "Range"; //Range
     public const string onActivation = "OnActivation"; //OnActivation
-    public const string assignEffect = "AssignEffect"; //Effect
-    public const string amount = "Amount"; //Amount
+    public const string assignEffect = "Effect"; //Effect
     public const string selector = "Selector"; //Selector
     public const string Source = "Source"; //Source
     public const string single = "Single"; //Single
     public const string predicate = "Predicate"; //Predicate
     public const string postAction = "PostAction"; //PostAction
     // Palabras claves para definir un efecto
-    public const string declareEffect = "DeclareEffect"; //effect
+    public const string declareEffect = "effect"; //effect
     public const string Params = "Params"; 
     public const string action = "Action"; 
     //Otras
@@ -135,6 +135,7 @@ class Compiling
                 LexicalProcess.RegisterOperator("*", TokenValue.Mul);
                 LexicalProcess.RegisterOperator("/", TokenValue.Div);
                 LexicalProcess.RegisterOperator("++", TokenValue.addOne);
+                LexicalProcess.RegisterOperator("--", TokenValue.substractOne);
                 LexicalProcess.RegisterOperator("^", TokenValue.pow);
                 LexicalProcess.RegisterOperator("&&", TokenValue.and);
                 LexicalProcess.RegisterOperator("||", TokenValue.or);
@@ -171,7 +172,6 @@ class Compiling
                 LexicalProcess.RegisterKeyword("Range", TokenValue.range);
                 LexicalProcess.RegisterKeyword("OnActivation", TokenValue.onActivation);
                 LexicalProcess.RegisterKeyword("Effect", TokenValue.assignEffect);
-                LexicalProcess.RegisterKeyword("Amount", TokenValue.amount);
                 LexicalProcess.RegisterKeyword("Selector", TokenValue.selector);
                 LexicalProcess.RegisterKeyword("Source", TokenValue.Source);
                 LexicalProcess.RegisterKeyword("Single", TokenValue.single);
