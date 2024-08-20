@@ -65,7 +65,7 @@ public class Effect : AST
         if(ValidName && ValidAction)
         {
             Name.Evaluate();
-            context.effects.Add((string)Name.Value);
+            context.effects.Add((string)Name.Value, this);
         }
         return ValidName && ValidAction;
         

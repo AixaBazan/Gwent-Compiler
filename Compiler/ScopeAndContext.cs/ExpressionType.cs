@@ -11,5 +11,6 @@ public enum ExpressionType
     Context,
     Function,
     LambdaExpression,
+    PlayerId,
     ErrorType
 }

@@ -1,4 +1,4 @@
-class Selector : Stmt
+public class Selector : Stmt
 {
     public Expression Source { get; private set;}
     public Expression Single {get; private set;}

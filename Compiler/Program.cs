@@ -3,7 +3,7 @@
     public static void Main(string[] args)
     { 
         // Ruta del archivo de texto
-        string filePath = @"D:\Aixa Study\2do Proyecto\a.txt";
+        string filePath = @"D:\Aixa Study\2do Proyecto\Prueba.txt";
         // Leer el contenido del archivo y asignarlo a una variable string
         string text = File.ReadAllText(filePath);
         //Console.WriteLine(text);
@@ -56,6 +56,8 @@
             else
             {
                 System.Console.WriteLine("Todo bien semanticamente");
+                System.Console.WriteLine(context.effects.Count);
+                System.Console.WriteLine(context.cards.Count);
                 //result.Interprete();
 
                  //result.Interprete();

@@ -1,18 +1,18 @@
 //La clase context contiene las propiedades a la q se puede acceder cada tipo
 public class Context
 {
-    public List<string> effects;
+    public Dictionary<string, Effect> effects;
     public List<string> cards;
 
     public Context()
     {
-        effects = new List<string>();
+        effects = new Dictionary<string, Effect>();
         cards = new List<string>();
     }
     public Dictionary<string, ExpressionType> contextProperties = new Dictionary<string, ExpressionType>
     {
         {"Hand" , ExpressionType.List}, {"Field", ExpressionType.List}, {"Graveyard", ExpressionType.List},
-        {"TriggerPlayer", ExpressionType.Number}, {"Board", ExpressionType.List}, {"Deck", ExpressionType.List}
+        {"TriggerPlayer", ExpressionType.PlayerId}, {"Board", ExpressionType.List}, {"Deck", ExpressionType.List}
     };
     public Dictionary<string, ExpressionType> ContextMethods = new Dictionary<string, ExpressionType>
     {
@@ -22,7 +22,7 @@ public class Context
     public Dictionary<string, ExpressionType> cardProperties = new Dictionary<string, ExpressionType>
     {
         {"Name", ExpressionType.Text}, {"Faction", ExpressionType.Text}, {"Type", ExpressionType.Text},
-        {"Range", ExpressionType.List}, {"Owner", ExpressionType.Number}, {"Power", ExpressionType.Number}
+        {"Range", ExpressionType.List}, {"Owner", ExpressionType.PlayerId}, {"Power", ExpressionType.Number}
     };
     public Dictionary<string, ExpressionType> ListMethodsWithParams = new Dictionary<string, ExpressionType>
     {

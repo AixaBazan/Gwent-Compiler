@@ -1,17 +1,19 @@
-public class Card : AST
+public class CardComp : AST
 {
     public Expression Name{get;private set;}
     public Expression Power{get;private set;}
     public Expression Faction{get;private set;}
     public List<Expression> Range{get;private set;}
     public Expression Type{get;private set;}
-    public Card(Expression name, Expression type, Expression faction, Expression power, List<Expression> range ,CodeLocation location):base(location)
+    public OnActivation OnActv {get; private set;}
+    public CardComp(Expression name, Expression type, Expression faction, Expression power, List<Expression> range, OnActivation activation, CodeLocation location):base(location)
     {
         this.Name = name;
         this.Type = type;
         this.Faction = faction;
         this.Power = power;
         this.Range = range;
+        this.OnActv = activation;
     }
     public override bool CheckSemantic(Context context, Scope scope, List<CompilingError> errors)
     {
@@ -38,8 +40,9 @@ public class Card : AST
         {
             errors.Add(new CompilingError(Location, ErrorCode.Invalid, "La faccion de la carta debe ser una expresion de tipo texto"));
             return false;
-        }        
-        return checkPower && checkName && checkType && checkFaction;
+        } 
+        bool Act = OnActv.CheckSemantic(context, scope, errors);       
+        return checkPower && checkName && checkType && checkFaction && Act;
     }
     public void Interprete()
     {

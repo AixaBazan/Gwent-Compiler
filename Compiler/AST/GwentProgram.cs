@@ -3,12 +3,12 @@
 public class GwentProgram : Stmt
 {
     public List<Effect> Effects {get; set;}
-    public List<Card> Cards {get; set;}
+    public List<CardComp> Cards {get; set;}
     public override Scope AssociatedScope {get; set;}
     public GwentProgram(CodeLocation location) : base (location)
     {
         Effects = new List<Effect>();
-        Cards = new List<Card>();
+        Cards = new List<CardComp>();
     }
     
     /* To check a program semantic we sould first collect all the existing elements and store them in the context.
@@ -24,7 +24,7 @@ public class GwentProgram : Stmt
         }
 
         bool checkCards = true;
-        foreach (Card card in Cards)
+        foreach (CardComp card in Cards)
         {
             //cada carta tiene su propio scope
             checkCards = checkCards && card.CheckSemantic(context, AssociatedScope, errors);
@@ -35,7 +35,7 @@ public class GwentProgram : Stmt
 
     public override void Interprete()
     {
-        foreach (Effect card in Effects)
+        foreach (CardComp card in Cards)
         {
             card.Interprete();
         }
@@ -48,7 +48,7 @@ public class GwentProgram : Stmt
         {
             s = s + "\n" + effect.ToString();
         }
-        foreach (Card card in Cards)
+        foreach (CardComp card in Cards)
         {
             s += "\n" + card.ToString();
         }

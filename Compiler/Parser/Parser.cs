@@ -64,7 +64,7 @@ class Parser
 
     #region Card
     //Parseando la carta
-    public Card ParseCard(CodeLocation location)
+    public CardComp ParseCard(CodeLocation location)
     {
         Expression Name = null;
         Expression Power = null;
@@ -72,6 +72,7 @@ class Parser
         Expression Type = null;
         List<Expression> Range = null;
         List<AssignEffect> onActivation = new List<AssignEffect>();
+        CodeLocation ActvLocation = location;
         do
         {
             try
@@ -86,6 +87,7 @@ class Parser
             //OnActivation
             else if(Stream.Match((TokenValue.onActivation))) 
             {
+                ActvLocation = Stream.Previous().Location;
                 Stream.Consume(TokenValue.colon, "Se esperaba :");
                 Stream.Consume(TokenValue.OpenSquareBracket, "Se esperaba [");
                 while(Stream.Match((TokenValue.OpenCurlyBracket)))
@@ -109,8 +111,9 @@ class Parser
         if(Faction is null) throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "No se declaro la faccion de la carta");
         if(Power is null) throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "No se declaro el poder de la carta");
         if(Range is null) throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "No se declaro el range de la carta");
-
-        return new Card(Name, Type, Faction, Power, Range, location);
+        if(onActivation.Count == 0 ) throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "No se le asignaron efectos a la carta");
+        OnActivation activation = new OnActivation(onActivation, ActvLocation);
+        return new CardComp(Name, Type, Faction, Power, Range, activation, location);
     }
     private AssignEffect assignEffect(CodeLocation location)
     {
@@ -678,7 +681,7 @@ class Parser
                 {
                     if (!Stream.Match(TokenValue.ClosedBracket))
                     {
-                        Expression param = expression(); // Llama a la función de expresión para obtener parámetros
+                        Expression param = expression(); 
                         Stream.Consume(TokenValue.ClosedBracket, "Se esperaba )");
                         exp = new MethodWithParams(exp, caller.Value, param, varLoc);
                     }
