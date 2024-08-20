@@ -10,5 +10,6 @@ public enum ExpressionType
     List,
     Context,
     Function,
+    LambdaExpression,
     ErrorType
 }

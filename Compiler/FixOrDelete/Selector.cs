@@ -2,17 +2,19 @@ class Selector : Stmt
 {
     public Expression Source { get; private set;}
     public Expression Single {get; private set;}
-    //public Expression Predicate {get; private set;}
-    public Selector(Expression source, Expression single, CodeLocation location) : base(location)
+    public Expression Predicate {get; private set;}
+    public Selector(Expression source, Expression single, Expression predicate, CodeLocation location) : base(location)
     {
         this.Source = source;
         this.Single = single;
+        this.Predicate = predicate;
     }
     public override Scope AssociatedScope {get;set;}
     public override bool CheckSemantic(Context context, Scope scope, List<CompilingError> errors)
     {
-        this.AssociatedScope = scope;
+        this.AssociatedScope = scope;   
 
+        //Chequeando el Source
         bool ValidSource = Source.CheckSemantic(context, AssociatedScope, errors);
         if(Source.Type != ExpressionType.Text)
         {
@@ -25,6 +27,8 @@ class Selector : Stmt
             errors.Add(new CompilingError(Location, ErrorCode.Invalid, "El Source declarado es invalido"));
             return false;
         }
+
+        //Chequeando el Single
         if(Single is null)
         {
             Single.Type  = ExpressionType.Boolean;
@@ -39,6 +43,14 @@ class Selector : Stmt
                 return false;
             }
         }
+
+        //Chequeando el Predicate
+        Predicate.CheckSemantic(context, AssociatedScope, errors);
+        if(Predicate.Type != ExpressionType.LambdaExpression)
+        {
+            errors.Add(new CompilingError(Location, ErrorCode.Invalid, "El Predicate debe recibir una expresion lambda"));
+            return false;
+        }
         return true;
     }
     public override void Interprete()
@@ -47,6 +59,6 @@ class Selector : Stmt
     }
     public override string ToString()
     {
-        return base.ToString();
+        return "Selector: /n Source: " + Source +  "/n Single: " + Single + "n/ Predicate: " + Predicate;
     }
 }

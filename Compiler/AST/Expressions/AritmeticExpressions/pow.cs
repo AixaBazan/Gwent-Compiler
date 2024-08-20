@@ -13,7 +13,7 @@ class Pow : BinaryExpression
         Right.Evaluate();
         Left.Evaluate();
 
-        Value = Math.Pow((double)Right.Value,(double)Left.Value);
+        Value = Math.Pow((double)Left.Value,(double)Right.Value);
     }
     public override bool CheckSemantic(Context context, Scope scope, List<CompilingError> errors)
     {
