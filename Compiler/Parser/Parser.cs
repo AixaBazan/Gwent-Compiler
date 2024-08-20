@@ -435,14 +435,13 @@ class Parser
         }
         else if (Stream.Match(TokenType.Identifier))
         {
+            Stream.MoveNext(-1);
+            CodeLocation loc = Stream.Peek().Location;
+            Expression exp = expression();
+            stmt = new ExpressionStmt(exp, Stream.Previous().Location);
             if(Stream.Match(TokenValue.Assign, TokenValue.Increase, TokenValue.Decrease))
             {
-                stmt = VarDeclaration();
-            }
-            else 
-            {
-                Stream.MoveNext(-1);
-                stmt = new ExpressionStmt(expression(), Stream.Previous().Location);
+                stmt = VarDeclaration(exp, loc);
             }
         }
         else throw new CompilingError(Stream.Peek().Location, ErrorCode.Invalid, "Statement vacio o expresion invalida");
@@ -452,10 +451,9 @@ class Parser
         }
         return stmt;
     }
-    public Stmt VarDeclaration() 
+    public Stmt VarDeclaration(Expression exp, CodeLocation loc) 
     {
-        string Id = Stream.LookAhead(-2).Value;
-        CodeLocation loc = Stream.LookAhead(-2).Location;
+        Expression Id = exp;
         Token op = Stream.Previous();
         Expression initializer = expression();
         return new Var(Id ,initializer,op, loc);
@@ -622,6 +620,16 @@ class Parser
             // Procesar indexados, propiedades y métodos
             exp = ProcessMemberAccess(exp, VarLoc);
 
+            //Procesar q se le hizo ++ o --
+            if(Stream.Match(TokenValue.addOne, TokenValue.substractOne))
+            {
+                if(exp is Variable)
+                {
+                    exp = new ModificOne(exp.ToString(), Stream.Previous(), VarLoc);
+                }  
+                else throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "Solo se puede aplicar ++ y -- a variables");
+            }
+            
             return exp;
         }
         if (Stream.Match(TokenType.Number)) 

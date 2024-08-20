@@ -1,4 +1,4 @@
-public class Property : UnaryExpression
+public class Property : Expression
 {
     public Property(Expression exp, string caller, CodeLocation location): base(location)
     {

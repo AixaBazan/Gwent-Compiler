@@ -1,4 +1,4 @@
-public class Indexer : UnaryExpression
+public class Indexer : Expression
 {
     public Indexer(Expression exp, double index, CodeLocation location): base(location)
     {

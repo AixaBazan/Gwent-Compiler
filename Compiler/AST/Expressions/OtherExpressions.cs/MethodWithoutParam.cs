@@ -1,4 +1,4 @@
-class Method : UnaryExpression
+class Method : Expression
 {
     public Method(Expression exp, string method, CodeLocation location): base(location)
     {

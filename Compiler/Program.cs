@@ -3,7 +3,7 @@
     public static void Main(string[] args)
     { 
         // Ruta del archivo de texto
-        string filePath = @"D:\Aixa Study\2do Proyecto\Prueba.txt";
+        string filePath = @"D:\Aixa Study\2do Proyecto\a.txt";
         // Leer el contenido del archivo y asignarlo a una variable string
         string text = File.ReadAllText(filePath);
         //Console.WriteLine(text);
@@ -38,30 +38,30 @@
         System.Console.WriteLine(result);
 
         
-        // List<CompilingError> errors = new List<CompilingError>();
+        List<CompilingError> errors = new List<CompilingError>();
         
-        //     Context context = new Context();
-        //     Scope scope = new Scope();
+            Context context = new Context();
+            Scope scope = new Scope();
             
 
-        //     result.CheckSemantic(context, scope, errors);
+            result.CheckSemantic(context, scope, errors);
 
-        //     if (errors.Count > 0)
-        //     {
-        //         foreach (CompilingError error in errors)
-        //         {
-        //             Console.WriteLine("{0}, {1}, {2}", error.Location.Line, error.Code, error.Argument);
-        //         }
-        //     }
-        //     else
-        //     {
-        //         //System.Console.WriteLine("Carta bien semanticamente");
-        //         result.Interprete();
+            if (errors.Count > 0)
+            {
+                foreach (CompilingError error in errors)
+                {
+                    Console.WriteLine("{0}, {1}, {2}", error.Location.Line, error.Code, error.Argument);
+                }
+            }
+            else
+            {
+                System.Console.WriteLine("Todo bien semanticamente");
+                //result.Interprete();
 
-        //          //result.Interprete();
+                 //result.Interprete();
 
-        //          //Console.WriteLine("Valor: " + result);
-        //     }
+                 //Console.WriteLine("Valor: " + result);
+            }
         }
         else
         {
@@ -73,55 +73,55 @@
         }
 
 
-        // //Expresiones:
-        // System.Console.WriteLine("Se supone que aqui se parsea");
-        // TokenStream read = new TokenStream(tokens);
-        // Parser parser = new Parser(read);
-        // List<CompilingError> Error = new List<CompilingError>();
-        // Expression result = parser.expression();
-        // if (result == null)
-        // {
-        //     Console.WriteLine("No se pudo parsear la expresión.");
-        //     return;
-        // }
-        // if(parser.errors.Count == 0)
-        // {
-        // System.Console.WriteLine("Resultado del parseo:");
-        // System.Console.WriteLine(result);
+        // // //Expresiones:
+        // // System.Console.WriteLine("Se supone que aqui se parsea");
+        // // TokenStream read = new TokenStream(tokens);
+        // // Parser parser = new Parser(read);
+        // // List<CompilingError> Error = new List<CompilingError>();
+        // // Expression result = parser.expression();
+        // // if (result == null)
+        // // {
+        // //     Console.WriteLine("No se pudo parsear la expresión.");
+        // //     return;
+        // // }
+        // // if(parser.errors.Count == 0)
+        // // {
+        // // System.Console.WriteLine("Resultado del parseo:");
+        // // System.Console.WriteLine(result);
              
-        // List<CompilingError> errors = new List<CompilingError>();
+        // // List<CompilingError> errors = new List<CompilingError>();
         
-        //     Context context = new Context();
-        //     Scope scope = new Scope();
+        // //     Context context = new Context();
+        // //     Scope scope = new Scope();
             
 
-        //     result.CheckSemantic(context, scope, errors);
+        // //     result.CheckSemantic(context, scope, errors);
 
-        //     if (errors.Count > 0)
-        //     {
-        //         foreach (CompilingError error in errors)
-        //         {
-        //             Console.WriteLine("{0}, {1}, {2}", error.Location.Line, error.Code, error.Argument);
-        //         }
-        //     }
-        //     else
-        //     {
-        //         //System.Console.WriteLine("Carta bien semanticamente");
-        //         result.Evaluate();
+        // //     if (errors.Count > 0)
+        // //     {
+        // //         foreach (CompilingError error in errors)
+        // //         {
+        // //             Console.WriteLine("{0}, {1}, {2}", error.Location.Line, error.Code, error.Argument);
+        // //         }
+        // //     }
+        // //     else
+        // //     {
+        // //         //System.Console.WriteLine("Carta bien semanticamente");
+        // //         result.Evaluate();
 
-        //          //result.Interprete();
+        // //          //result.Interprete();
 
-        //          Console.WriteLine("Valor: " + result);
-        //     }
-        // }
-        // else
-        // {
-        //     foreach(var item in parser.errors)
-        //     {
-        //         System.Console.WriteLine(item);
-        //     }
-        //     System.Console.WriteLine("Hubo errores en el parse, no se pudo continuar la evaluacion");
-        // }
+        // //          Console.WriteLine("Valor: " + result);
+        // //     }
+        // // }
+        // // else
+        // // {
+        // //     foreach(var item in parser.errors)
+        // //     {
+        // //         System.Console.WriteLine(item);
+        // //     }
+        // //     System.Console.WriteLine("Hubo errores en el parse, no se pudo continuar la evaluacion");
+        // // }
     }   
     
 }

@@ -1,4 +1,4 @@
-class MethodWithParams : UnaryExpression
+class MethodWithParams : Expression
 {
     public MethodWithParams(Expression exp, string method, Expression param, CodeLocation location): base(location)
     {
