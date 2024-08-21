@@ -48,5 +48,5 @@ public class Context
         Lider
     }
     public string[] ValidRange = new string[]{"Melee", "Siege", "Ranged"};
-    public string[] ValidSource = new string[]{"hand", "otherHand", "deck", "otherDeck", "field", "otherField", "parent"};
+    public string[] ValidSource = new string[]{"hand", "otherHand", "deck", "otherDeck", "field", "otherField", "board"};
 }

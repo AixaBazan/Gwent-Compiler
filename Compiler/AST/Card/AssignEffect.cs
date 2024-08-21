@@ -71,6 +71,11 @@ public class AssignEffect : Stmt
         }
 
         //Se chequea que el Selector este bien semanticamente
+        if(selector is null)
+        {
+            errors.Add(new CompilingError(Location, ErrorCode.Invalid, "Debe declarar el Selector en el efecto de la carta" ));
+            return false;
+        }
         bool ValidSel = selector.CheckSemantic(context, AssociatedScope, errors);
 
         return ValidSel;
@@ -81,6 +86,14 @@ public class AssignEffect : Stmt
     }
     public override string ToString()
     {
-        return base.ToString();
+
+        var effectString = $"Effect: {{\n" + $"    Name: \"{Name}\",\n";
+        // Formatear la representación de los parámetros
+        string paramsRepresentation = Params.Count > 0 
+        ? string.Join(", ", Params.Select(p => $"{p.Item1}: {p.Item2.Value}")) 
+        : "Sin parámetros";
+
+    // Combine both parts
+    return $"{effectString}\n{paramsRepresentation}\n" + selector + "\n }" ;
     }
 }

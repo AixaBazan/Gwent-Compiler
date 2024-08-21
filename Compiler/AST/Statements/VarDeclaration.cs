@@ -36,7 +36,6 @@ class Var : Stmt
         else if(Name is Property)
         {
             Name.CheckSemantic(context, AssociatedScope, errors);
-            System.Console.WriteLine("es una propiedad");
             if(Name.Type != ExpressionType.Number)
             {
                 errors.Add(new CompilingError(Location, ErrorCode.Invalid, "Solo se permite modificar la propiedad Power de la carta"));

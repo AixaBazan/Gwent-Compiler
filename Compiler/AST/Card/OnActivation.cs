@@ -21,6 +21,12 @@ public class OnActivation : Stmt
     }
     public override string ToString()
     {
-        return "a";
+        string s = " \n";
+        foreach(var item in assignEffects)
+        {
+            s += (item);
+            s += " \n ";
+        }
+        return s;
     }
 }

@@ -13,7 +13,7 @@ class Lambda : Expression
     {
         if(scope.GetType(Variable.Value) != ExpressionType.ErrorType)
         {
-            errors.Add(new CompilingError(Location, ErrorCode.Invalid, "La variable" + Variable.Value + "ya ha sido declarada, no se puede usar como parametro de la expresion lambda"));
+            errors.Add(new CompilingError(Location, ErrorCode.Invalid, "La variable " + Variable.Value + " ya ha sido declarada, no se puede usar como parametro de la expresion lambda"));
             this.Type = ExpressionType.ErrorType;
             return false;
         }

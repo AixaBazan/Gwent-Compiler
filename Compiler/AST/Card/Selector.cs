@@ -22,7 +22,7 @@ public class Selector : Stmt
             return false;
         }
         Source.Evaluate();
-        if(!context.ValidRange.Contains(Source.Value))
+        if(!context.ValidSource.Contains(Source.Value))
         {
             errors.Add(new CompilingError(Location, ErrorCode.Invalid, "El Source declarado es invalido"));
             return false;
@@ -59,6 +59,6 @@ public class Selector : Stmt
     }
     public override string ToString()
     {
-        return "Selector: /n Source: " + Source +  "/n Single: " + Single + "n/ Predicate: " + Predicate;
+        return "Selector: \n\t Source: " + Source +  "\n\t Single: " + Single + "\n\t Predicate: " + Predicate;
     }
 }
