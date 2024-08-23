@@ -111,9 +111,10 @@ class Parser
         if(Faction is null) throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "No se declaro la faccion de la carta");
         if(Power is null) throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "No se declaro el poder de la carta");
         if(Range is null) throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "No se declaro el range de la carta");
+        //Revisar para no asignar efectos dejarlo vacio si se puede
         if(onActivation.Count == 0 ) throw new CompilingError(Stream.Peek().Location, ErrorCode.Expected, "No se le asignaron efectos a la carta");
-        OnActivation activation = new OnActivation(onActivation, ActvLocation);
-        return new CardComp(Name, Type, Faction, Power, Range, activation, location);
+        
+        return new CardComp(Name, Type, Faction, Power, Range, onActivation, location);
     }
     private AssignEffect assignEffect(CodeLocation location)
     {

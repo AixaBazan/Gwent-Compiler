@@ -1,12 +1,11 @@
 
-public class AssignEffect : Stmt
+public class AssignEffect : AST
 {
     public Expression Name {get; private set;}
     public List<(string, Expression)> Params {get; private set;}
     public Selector selector {get; private set;}  
     public Effect RefEffect {get; private set;}  
     //public AssignEffect PostAction {get; private set;}
-    public override Scope AssociatedScope {get;set;}
     public AssignEffect(Expression name, List<(string, Expression)> param, Selector sel, CodeLocation location) : base(location)
     {
         this.Name = name;
@@ -19,10 +18,8 @@ public class AssignEffect : Stmt
     } 
     public override bool CheckSemantic(Context context, Scope scope, List<CompilingError> errors)
     {
-        this.AssociatedScope = scope;
-
         //Se verifica que la expresion del nombre sea de tipo texto
-        Name.CheckSemantic(context, AssociatedScope, errors);
+        Name.CheckSemantic(context, scope, errors);
         if(Name.Type != ExpressionType.Text)
         {
             errors.Add(new CompilingError(Location, ErrorCode.Invalid, "El nombre del efecto debe ser de tipo Texto"));
@@ -51,7 +48,7 @@ public class AssignEffect : Stmt
         {
             if(RefEffect.EffectParams.ContainsKey(item.Item1))
             {
-                item.Item2.CheckSemantic(context, AssociatedScope, errors);
+                item.Item2.CheckSemantic(context, scope, errors);
                 if(item.Item2.Type == RefEffect.EffectParams[item.Item1])
                 {
                     RefEffect.AssociatedScope.Define(item.Item1, item.Item2.Value);
@@ -76,13 +73,9 @@ public class AssignEffect : Stmt
             errors.Add(new CompilingError(Location, ErrorCode.Invalid, "Debe declarar el Selector en el efecto de la carta" ));
             return false;
         }
-        bool ValidSel = selector.CheckSemantic(context, AssociatedScope, errors);
+        bool ValidSel = selector.CheckSemantic(context, scope, errors);
 
         return ValidSel;
-    }
-    public override void Interprete()
-    {
-        throw new NotImplementedException();
     }
     public override string ToString()
     {

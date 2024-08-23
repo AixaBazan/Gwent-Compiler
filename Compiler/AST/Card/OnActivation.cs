@@ -6,11 +6,11 @@ public class OnActivation : Stmt
     {
         this.assignEffects = effects;
     }
-    public override bool CheckSemantic(Context context, Scope table, List<CompilingError> errors)
+    public override bool CheckSemantic(Context context, Scope scope, List<CompilingError> errors)
     {
         foreach(var item in assignEffects)
         {
-            bool valid = item.CheckSemantic(context, table, errors);
+            bool valid = item.CheckSemantic(context, scope, errors);
             if(valid == false) return false;
         }
         return true;

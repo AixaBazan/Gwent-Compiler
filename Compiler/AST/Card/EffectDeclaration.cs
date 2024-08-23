@@ -1,6 +1,7 @@
 public class Effect : AST
 {
     public Expression Name {get;private set;}
+    //arreglar para q sea un string
     public Token Targets {get; private set;}
     public Token Context {get; private set;}
     public Stmt Body {get; private set;}
@@ -70,9 +71,11 @@ public class Effect : AST
         return ValidName && ValidAction;
         
     }
-    public void Interprete()
+    //correr el efecto
+    public void RunEffect(List<Card> targets)
     {
-        Body.Interprete();
+        //ver q hago
+        //Body.Interprete();
     }
     public override string ToString()
     {

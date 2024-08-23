@@ -39,14 +39,7 @@ public class Context
         {"Number", ExpressionType.Number}, //tambien quita la carta de la lista
         {"String", ExpressionType.Text}, {"Bool", ExpressionType.Boolean}
     };
-    public enum ValidCardType
-    {
-        Oro,
-        Plata,
-        Clima,
-        Aumento,
-        Lider
-    }
+    public string[] ValidType = new string[]{"Oro", "Plata", "Aumento", "Clima", "Lider"};
     public string[] ValidRange = new string[]{"Melee", "Siege", "Ranged"};
     public string[] ValidSource = new string[]{"hand", "otherHand", "deck", "otherDeck", "field", "otherField", "board"};
 }

@@ -1,20 +1,24 @@
-public class CardComp : Stmt
+using System.Security.Claims;
+
+public class CardComp : AST
 {
     public Expression Name{get;private set;}
     public Expression Power{get;private set;}
     public Expression Faction{get;private set;}
     public List<Expression> Range{get;private set;}
     public Expression Type{get;private set;}
-    public OnActivation OnActv {get; private set;}
-    public override Scope AssociatedScope { get; set;}
-    public CardComp(Expression name, Expression type, Expression faction, Expression power, List<Expression> range, OnActivation activation, CodeLocation location):base(location)
+    public List<AssignEffect> OnActivation {get; private set;}
+    public Scope AssociatedScope { get; set;}
+    List<string> range {get; set;}
+    public CardComp(Expression name, Expression type, Expression faction, Expression power, List<Expression> range, List<AssignEffect> activation, CodeLocation location):base(location)
     {
         this.Name = name;
         this.Type = type;
         this.Faction = faction;
         this.Power = power;
         this.Range = range;
-        this.OnActv = activation;
+        this.OnActivation = activation;
+        this.range = new List<string>();
     }
     public override bool CheckSemantic(Context context, Scope scope, List<CompilingError> errors)
     {
@@ -22,6 +26,8 @@ public class CardComp : Stmt
         this.AssociatedScope = scope.CreateChild();
 
         //Se chequean las distintas propiedades de la carta y q sean del tipo valido
+        //Poder
+        //preguntar si es valido ponerlo negativo
         Power.CheckSemantic(context, AssociatedScope, errors);
         if (Power.Type != ExpressionType.Number)
         {
@@ -29,13 +35,22 @@ public class CardComp : Stmt
             return false;
         }
 
+        //Tipo
         Type.CheckSemantic(context, AssociatedScope, errors);
         if(Type.Type != ExpressionType.Text)
         {
             errors.Add(new CompilingError(Location, ErrorCode.Invalid, "El tipo de la carta debe ser una expresion de tipo texto"));
             return false;
         }
+        //Chequear q pusieran un tipo valido
+        Type.Evaluate();
+        if(!context.ValidType.Contains((string)Type.Value))
+        {
+            errors.Add(new CompilingError(Location, ErrorCode.Invalid, "Tipo de carta invalido, se espera Oro, Plata, Aumento, Clima o Lider"));
+            return false;
+        }
 
+        //Nombre
         Name.CheckSemantic(context, AssociatedScope, errors);
         if(Name.Type != ExpressionType.Text)
         {
@@ -43,31 +58,81 @@ public class CardComp : Stmt
             return false;
         }
 
+        //Faccion
         Faction.CheckSemantic(context, AssociatedScope, errors);
         if(Faction.Type != ExpressionType.Text)
         {
             errors.Add(new CompilingError(Location, ErrorCode.Invalid, "La faccion de la carta debe ser una expresion de tipo texto"));
             return false;
         } 
+        //Chequear q pusieran una faccion valida
+        Faction.Evaluate();
+        if(((string)Faction.Value != "Fairies") || ((string)Faction.Value != "Demons"))
+        {
+            errors.Add(new CompilingError(Location, ErrorCode.Invalid, "Las facciones para las cartas disponibles son: Fairies y Demons"));
+            return false;
+        }
+
+        //Range
+        foreach(var item in Range)
+        {
+            item.CheckSemantic(context, AssociatedScope, errors);
+            if(item.Type != ExpressionType.Text)
+            {
+                errors.Add(new CompilingError(Location, ErrorCode.Invalid, "Se esperaba una expresion de texto en el Range de la carta"));
+                return false;
+            }
+            item.Evaluate();
+            if(!context.ValidRange.Contains((string)item.Value))
+            {
+                errors.Add(new CompilingError(Location, ErrorCode.Invalid, "Range invalido, se espera: Melee, Ranged o Siege"));
+                return false;
+            }
+            range.Add((string)item.Value);
+        }
 
         //OnActivation 
-        bool ValidAct = OnActv.CheckSemantic(context, AssociatedScope, errors);  
-        if(ValidAct)
+        foreach(var item in OnActivation)
         {
-            context.cards.Add((string)Name.Value);
+            bool valid = item.CheckSemantic(context, scope, errors);
+            if(valid == false) return false;
         }
-        return ValidAct;
+
+        // Como esta todo en orden se annade la carta al contexto
+        context.cards.Add((string)Name.Value);
+
+        return true;
     }
     //Falta interpretar selector y efectos
-    public override void Interprete()
+    public void CardBuilder()
     {
         Name.Evaluate();
-        Faction.Evaluate();
-        Type.Evaluate();
         Power.Evaluate();
+        //Creando las instancias de la carta segun su tipo:
+        if((string)Type.Value == "Oro")
+        {
+            Card a = new UnitCard((string)Name.Value, (double)Power.Value, (string)Faction.Value, CardType.Oro, range);
+        }
+        else if((string)Type.Value == "Plata")
+        {
+            Card a = new UnitCard((string)Name.Value, (double)Power.Value, (string)Faction.Value, CardType.Plata, range);
+        }
+        else if((string)Type.Value == "Clima")
+        {
+            Card a = new SpecialCard((string)Name.Value, (string)Faction.Value, CardType.Clima);
+        }
+        else if((string)Type.Value == "Aumento")
+        {
+            Card a = new SpecialCard((string)Name.Value, (string)Faction.Value, CardType.Aumento);
+        }
+        else if((string)Type.Value == "Lider")
+        {
+            Card a = new LeaderCard((string)Name.Value, (string)Faction.Value);
+        }
     }
+    //Arreglar ToString
     public override string ToString()
     { 
-        return String.Format("Card {0} \n\t Power: {1} \n\t Faction: {2} \n\t Type: {3} \n\t OnActivation: {4}", Name, Power, Faction, Type, OnActv);
+        return String.Format("Card {0} \n\t Power: {1} \n\t Faction: {2} \n\t Type: {3} \n\t OnActivation: ", Name, Power, Faction, Type);
     }
 }
